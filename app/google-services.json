@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "190513101322",
+    "firebase_url": "https://searchgo-912f8.firebaseio.com",
+    "project_id": "searchgo-912f8",
+    "storage_bucket": "searchgo-912f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:190513101322:android:5bc2ebf1a415ff51",
+        "android_client_info": {
+          "package_name": "com.searchgo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "190513101322-pe5lttnp0t72o4je5losjglpes9vetmc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhbshvZbYi28PQNfsmE_fuqcsrGGgtmts"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

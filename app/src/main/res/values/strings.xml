@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">SearchGo</string>
+    <string name="title_activity_map">Map</string>
+    <string name="select_addr">Select Address</string>
+    <string name="dog_category_lbl">Dog</string>
+    <string name="man_category_lbl">Person</string>
+    <string name="save_new_event_and_continue">Save and Continue</string>
+    <string name="category_lbl">Category</string>
+    <string name="event_name_lbl">Event Name :</string>
+    <string name="enter_event_name">Enter event name here</string>
+    <string name="add_new_picture_lbl">Add picture</string>
+    <string name="take_photo">Take Picture</string>
+    <string name="choose_from_library">Open Gallery</string>
+    <string name="select_file">Select Image</string>
+    <string name="title_activity_home_page">Search Go</string>
+    <string name="pick_last_seen">Last Seen</string>
+    <string name="enter_last_seen">Last Seen</string>
+    <string name="search_event_details_ttl">Search Event</string>
+    <string name="lbl_enter_last_seen">Last Seen:</string>
+    <string name="need_permissions_to_get_location">Need location permissions</string>
+</resources>
