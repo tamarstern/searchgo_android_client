@@ -96,10 +96,10 @@ public class HomePageActivity extends AppCompatActivity  implements GoogleApiCli
 
     private void getCurrentLocation() {
         int permissionAccessCoarseLocation = ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION);
+                android.Manifest.permission.ACCESS_FINE_LOCATION);
         if ((permissionAccessCoarseLocation != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
             return;
         }
@@ -121,11 +121,11 @@ public class HomePageActivity extends AppCompatActivity  implements GoogleApiCli
             {
                 Map<String, Integer> perms = new HashMap<String, Integer>();
                 // Initial
-                perms.put(Manifest.permission.ACCESS_COARSE_LOCATION, PackageManager.PERMISSION_GRANTED);
+                perms.put(Manifest.permission.ACCESS_FINE_LOCATION, PackageManager.PERMISSION_GRANTED);
 
                 for (int i = 0; i < permissions.length; i++)
                     perms.put(permissions[i], grantResults[i]);
-                if (perms.get(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                if (perms.get(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     executeFindLocationService();
                 } else {
                     String message = getResources().getString(R.string.need_permissions_to_get_location);

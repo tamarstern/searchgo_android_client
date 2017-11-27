@@ -1,5 +1,8 @@
 package com.searchgo.dto;
 
+import com.strongloop.android.loopback.Model;
+import com.strongloop.android.loopback.ModelRepository;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,11 +10,13 @@ import java.util.Date;
  * Created by tamar.twena on 11/21/2017.
  */
 
-public class EmergencyEvent implements Serializable {
+public class EmergencyEvent extends Model implements Serializable {
 
     private String id;
 
     private String name;
+
+    private String description;
 
     private String category;
 
@@ -67,5 +72,19 @@ public class EmergencyEvent implements Serializable {
 
     public Date getCreatedOn() {
         return createdOn;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public static class EmergencyEventRepository extends ModelRepository<EmergencyEvent> {
+        public EmergencyEventRepository() {
+            super("EmergencyEvent", "EmergencyEvents", EmergencyEvent.class);
+        }
     }
 }
