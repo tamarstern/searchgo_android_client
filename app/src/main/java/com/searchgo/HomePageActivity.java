@@ -27,8 +27,8 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.searchgo.dto.EmergencyEvent;
-import com.searchgo.dto.EmergencyEventFactory;
+import com.searchgo.dto.activity.EmergencyEventActivityDto;
+import com.searchgo.dto.activity.EmergencyEventActivityDtoFactory;
 import com.searchgo.fragments.PageAdapter;
 
 import java.util.HashMap;
@@ -147,7 +147,7 @@ public class HomePageActivity extends AppCompatActivity  implements GoogleApiCli
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 String address = place.getAddress().toString();
                 Intent intent = new Intent(this, CreateEventActivity.class);
-                EmergencyEvent event = EmergencyEventFactory.generateEmergencyEvent(address);
+                EmergencyEventActivityDto event = EmergencyEventActivityDtoFactory.generateEmergencyEvent(address);
                 intent.putExtra(EVENT_DTO, event);
                 startActivity(intent);
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {

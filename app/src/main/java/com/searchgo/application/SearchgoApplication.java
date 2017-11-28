@@ -3,7 +3,6 @@ package com.searchgo.application;
 import android.app.Application;
 
 import com.strongloop.android.loopback.RestAdapter;
-import com.strongloop.android.remoting.adapters.RestContractItem;
 
 import static com.searchgo.constants.ServiceConstants.SERVER_URL;
 
@@ -11,7 +10,7 @@ import static com.searchgo.constants.ServiceConstants.SERVER_URL;
  * Created by tamar.twena on 11/27/2017.
  */
 
-public class SearchgoApplication extends Application{
+public class SearchGoApplication extends Application{
 
     RestAdapter adapter;
 

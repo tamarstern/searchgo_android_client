@@ -5,23 +5,26 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.searchgo.dto.EmergencyEvent;
-import com.searchgo.fragments.DatePickerFragment;
+import com.searchgo.application.SearchGoApplication;
+import com.searchgo.dto.activity.EmergencyEventActivityDto;
+import com.searchgo.dto.service.EmergencyEventServiceDto;
+import com.searchgo.dto.service.EmergencyEventServiceDtoFactory;
 import com.searchgo.fragments.DateSelectorFragment;
 import com.searchgo.utils.ImageSelectorUtils;
+import com.strongloop.android.loopback.Model;
+import com.strongloop.android.loopback.RestAdapter;
 
 import java.util.Date;
 
@@ -33,7 +36,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private Button addImageButton;
     private ImageView eventImage;
     final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
-    private EmergencyEvent event;
+    private EmergencyEventActivityDto event;
     private RadioGroup radioCategoryGroup;
     private EditText eventNameEditText;
 
@@ -45,7 +48,7 @@ public class CreateEventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_event);
 
         Intent intent = getIntent();
-        event = (EmergencyEvent)intent.getExtras().get(EVENT_DTO);
+        event = (EmergencyEventActivityDto)intent.getExtras().get(EVENT_DTO);
 
         radioCategoryGroup = (RadioGroup) findViewById(R.id.radio_category_group);
 
@@ -55,6 +58,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 initEventNameOnSave();
                 initCategoryOnSave();
                 initLastSeenOnSave();
+                sendSaveEventRequest();
                 startEventPageActivity();
             }
         });
@@ -75,6 +79,31 @@ public class CreateEventActivity extends AppCompatActivity {
 
         eventImage = (ImageView)findViewById(R.id.event_picture);
     }
+
+    private void sendSaveEventRequest() {
+        SearchGoApplication application = (SearchGoApplication)getApplication();
+        RestAdapter adapter = application.getLoopBackAdapter();
+        EmergencyEventServiceDto serviceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventService(adapter, event);
+        serviceDto.save(new Model.Callback() {
+
+            @Override
+            public void onSuccess() {
+                showResult("Saved!");
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                Log.e("ErroOnSave", "Cannot save Note model.", t);
+                showResult("Failed.");
+            }
+        });
+
+    }
+
+    void showResult(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
 
     private void changePictureAction() {
 

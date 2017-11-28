@@ -6,5 +6,5 @@ package com.searchgo.constants;
 
 public class ServiceConstants {
 
-    public static final String SERVER_URL = "http://localhost:3000/api";
+    public static final String SERVER_URL = "http://10.0.2.2:3000/api";
 }

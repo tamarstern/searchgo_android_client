@@ -16,7 +16,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.searchgo.dto.EmergencyEvent;
+import com.searchgo.dto.activity.EmergencyEventActivityDto;
+import com.searchgo.dto.service.EmergencyEventServiceDto;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,7 +41,7 @@ public class SearchEventActivity extends FragmentActivity implements OnMapReadyC
         mActionBarToolbar.setTitle(R.string.search_event_details_ttl);
 
         Intent intent = getIntent();
-        EmergencyEvent eventDto = (EmergencyEvent)intent.getExtras().get(EVENT_DTO);
+        EmergencyEventActivityDto eventDto = (EmergencyEventActivityDto)intent.getExtras().get(EVENT_DTO);
         address = eventDto.getAddress();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
