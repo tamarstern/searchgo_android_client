@@ -1,6 +1,7 @@
 package com.searchgo;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -18,6 +19,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.searchgo.application.SearchGoApplication;
+import com.searchgo.backgroundServices.BackgroundServiceScheduler;
 import com.searchgo.dto.activity.EmergencyEventActivityDto;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
 import com.searchgo.dto.service.EmergencyEventServiceDtoFactory;
@@ -27,6 +29,7 @@ import com.strongloop.android.loopback.Model;
 import com.strongloop.android.loopback.RestAdapter;
 
 import java.util.Date;
+import java.util.HashSet;
 
 import static com.searchgo.constants.ApplicationConstants.EVENT_DTO;
 
@@ -81,27 +84,26 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     private void sendSaveEventRequest() {
-        SearchGoApplication application = (SearchGoApplication)getApplication();
-        RestAdapter adapter = application.getLoopBackAdapter();
-        EmergencyEventServiceDto serviceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventService(adapter, event);
+        final Activity activity = this;
+        SearchGoApplication app = (SearchGoApplication)this.getApplication();
+        EmergencyEventServiceDto serviceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventService(app, event);
         serviceDto.save(new Model.Callback() {
 
             @Override
             public void onSuccess() {
-                showResult("Saved!");
             }
 
             @Override
             public void onError(Throwable t) {
-                Log.e("ErroOnSave", "Cannot save Note model.", t);
-                showResult("Failed.");
+                Log.e("ErrorOnSave", "Cannot save Emergency Event model.", t);
+                HashSet<EmergencyEventActivityDto> searchEventsToSave = ((SearchGoApplication) activity.getApplication()).getSearchEventsToSave();
+                searchEventsToSave.add(event);
+                if(!BackgroundServiceScheduler.isSaveEventServiceRunning()) {
+                    BackgroundServiceScheduler.scheduleSaveEmergencyEventService(activity);
+                }
             }
         });
 
-    }
-
-    void showResult(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 

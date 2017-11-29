@@ -2,7 +2,10 @@ package com.searchgo.application;
 
 import android.app.Application;
 
+import com.searchgo.dto.activity.EmergencyEventActivityDto;
 import com.strongloop.android.loopback.RestAdapter;
+
+import java.util.HashSet;
 
 import static com.searchgo.constants.ServiceConstants.SERVER_URL;
 
@@ -12,7 +15,9 @@ import static com.searchgo.constants.ServiceConstants.SERVER_URL;
 
 public class SearchGoApplication extends Application{
 
-    RestAdapter adapter;
+    private RestAdapter adapter;
+
+    private HashSet<EmergencyEventActivityDto> searchEventsToSave = new HashSet<EmergencyEventActivityDto>();
 
     public RestAdapter getLoopBackAdapter() {
         if (adapter == null) {
@@ -20,10 +25,11 @@ public class SearchGoApplication extends Application{
             adapter = new RestAdapter(
                     getApplicationContext(), SERVER_URL);
 
-     //       adapter.getContract().addItem(
-     //               new RestContractItem("locations/nearby", "GET"),
-      //              "location.nearby");
         }
         return adapter;
+    }
+
+    public HashSet<EmergencyEventActivityDto> getSearchEventsToSave() {
+        return searchEventsToSave;
     }
 }

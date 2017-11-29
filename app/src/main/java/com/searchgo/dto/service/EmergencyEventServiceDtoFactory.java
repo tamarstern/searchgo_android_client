@@ -1,5 +1,10 @@
 package com.searchgo.dto.service;
 
+import android.app.Activity;
+import android.content.Context;
+
+import com.searchgo.CreateEventActivity;
+import com.searchgo.application.SearchGoApplication;
 import com.searchgo.dto.activity.EmergencyEventActivityDto;
 import com.strongloop.android.loopback.RestAdapter;
 
@@ -11,8 +16,9 @@ import java.util.HashMap;
 
 public class EmergencyEventServiceDtoFactory {
 
-    public static EmergencyEventServiceDto generateEmergencyEventService(RestAdapter adapter, EmergencyEventActivityDto dto) {
+    public static EmergencyEventServiceDto generateEmergencyEventService(SearchGoApplication application, EmergencyEventActivityDto dto) {
 
+        RestAdapter adapter = application.getLoopBackAdapter();
         EmergencyEventServiceDto.EmergencyEventRepository repository = adapter.createRepository(EmergencyEventServiceDto.EmergencyEventRepository.class);
 
         EmergencyEventServiceDto serviceEvent = repository.createObject(new HashMap<String,Object>());
