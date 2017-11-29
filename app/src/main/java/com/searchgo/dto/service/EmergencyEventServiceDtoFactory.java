@@ -16,6 +16,7 @@ public class EmergencyEventServiceDtoFactory {
         EmergencyEventServiceDto.EmergencyEventRepository repository = adapter.createRepository(EmergencyEventServiceDto.EmergencyEventRepository.class);
 
         EmergencyEventServiceDto serviceEvent = repository.createObject(new HashMap<String,Object>());
+        serviceEvent.setId(dto.getId());
         serviceEvent.setAddress(dto.getAddress());
         serviceEvent.setName(dto.getName());
         //serviceEvent.setDescription(dto.getDescription());
