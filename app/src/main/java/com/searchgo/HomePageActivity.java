@@ -17,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -24,11 +26,20 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.searchgo.dto.activity.EmergencyEventActivityDto;
 import com.searchgo.dto.activity.EmergencyEventActivityDtoFactory;
+import com.searchgo.fragments.HomePageFragment;
 import com.searchgo.fragments.PageAdapter;
 
 import java.util.HashMap;
@@ -36,14 +47,19 @@ import java.util.Map;
 
 import static com.searchgo.constants.ApplicationConstants.EVENT_DTO;
 
-public class HomePageActivity extends AppCompatActivity  implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+public class HomePageActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback {
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private static int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
-
+    private static final int DEFAULT_ZOOM = 15;
     private GoogleApiClient mGoogleApiClient;
+    private GoogleMap mMap;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Location mLastKnownLocation;
+    private static final String TAG = HomePageActivity.class.getSimpleName();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +80,7 @@ public class HomePageActivity extends AppCompatActivity  implements GoogleApiCli
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
 
@@ -108,17 +125,37 @@ public class HomePageActivity extends AppCompatActivity  implements GoogleApiCli
     }
 
     private void executeFindLocationService() throws SecurityException {
-        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (location != null) {
-            Log.d("GetLocation", location.toString());
+        try {
+//            if (mLocationPermissionGranted) {
+            Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+            locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                @Override
+                public void onComplete(@NonNull Task<Location> task) {
+                    if (task.isSuccessful()) {
+                        // Set the map's camera position to the current location of the device.
+                        mLastKnownLocation = task.getResult();
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(mLastKnownLocation.getLatitude(),
+                                        mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                    } else {
+                        Log.d(TAG, "Current location is null. Using defaults.");
+//                            Log.e(TAG, "Exception: %s", task.getException());
+//                            mMap.moveCamera(CameraUpdateFactory
+//                                    .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+//                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                    }
+                }
+            });
+//            }
+        } catch (SecurityException e) {
+            Log.e("Exception: %s", e.getMessage());
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
-            {
+            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS: {
                 Map<String, Integer> perms = new HashMap<String, Integer>();
                 // Initial
                 perms.put(Manifest.permission.ACCESS_FINE_LOCATION, PackageManager.PERMISSION_GRANTED);
@@ -129,7 +166,7 @@ public class HomePageActivity extends AppCompatActivity  implements GoogleApiCli
                     executeFindLocationService();
                 } else {
                     String message = getResources().getString(R.string.need_permissions_to_get_location);
-                    Toast.makeText(this,message , Toast.LENGTH_SHORT)
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT)
                             .show();
                 }
             }
@@ -170,7 +207,7 @@ public class HomePageActivity extends AppCompatActivity  implements GoogleApiCli
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PageAdapter adapter = new PageAdapter
-                (getSupportFragmentManager(), tabLayout.getTabCount());
+                (getSupportFragmentManager(), tabLayout.getTabCount(), this);
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -213,5 +250,34 @@ public class HomePageActivity extends AppCompatActivity  implements GoogleApiCli
         } else {
             Log.i("GetLocationFailed", "Location services connection failed with code " + connectionResult.getErrorCode());
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        mMap = map;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        executeFindLocationService();
+        // Use a custom info window adapter to handle multiple lines of text in the
+        // info window contents.
+
+        // Prompt the user for permission.
+//        getLocationPermission();
+
+        // Turn on the My Location layer and the related control on the map.
+//        updateLocationUI();
+
+        // Get the current location of the device and set the position of the map.
+//        getDeviceLocation();
     }
 }
