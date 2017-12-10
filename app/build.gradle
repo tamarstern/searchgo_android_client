@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.searchgo"
         minSdkVersion 15
-        targetSdkVersion 26
+        //targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -26,9 +26,9 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.android.gms:play-services-location:11.0.4'
-    compile 'com.google.android.gms:play-services-maps:11.0.4'
-    compile 'com.google.android.gms:play-services-places:11.0.4'
+    compile 'com.google.android.gms:play-services-location:11.6.2'
+    compile 'com.google.android.gms:play-services-maps:11.6.2'
+    compile 'com.google.android.gms:play-services-places:11.6.2'
     compile 'com.android.support:design:26.+'
     compile 'com.strongloop:loopback-sdk-android:1.5.+'
     compile 'com.google.code.gson:gson:2.8.2'
