@@ -82,9 +82,5 @@ public class EmergencyEventServiceDto extends Model implements Serializable {
         this.createdOn = createdOn;
     }
 
-    public static class EmergencyEventRepository extends ModelRepository<EmergencyEventServiceDto> {
-        public EmergencyEventRepository() {
-            super("EmergencyEventActivityDto", "EmergencyEvents", EmergencyEventServiceDto.class);
-        }
-    }
+
 }

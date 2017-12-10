@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.searchgo.R;
 import com.searchgo.dto.activity.EmergencyEventActivityDto;
+import com.searchgo.dto.service.EmergencyEventServiceDto;
 
 import java.util.ArrayList;
 
@@ -17,15 +18,15 @@ import java.util.ArrayList;
  * Created by tamar.twena on 12/1/2017.
  */
 
-public class ActivitiesAdapter extends ArrayAdapter<EmergencyEventActivityDto> {
+public class ActivitiesAdapter extends ArrayAdapter<EmergencyEventServiceDto> {
 
-    private final Activity context;
-    private ArrayList<EmergencyEventActivityDto> details;
+    private final Context context;
+    private ArrayList<EmergencyEventServiceDto> details;
 
     private TextView activityName;
 
 
-    public ActivitiesAdapter(Activity context, ArrayList<EmergencyEventActivityDto> details) {
+    public ActivitiesAdapter(Context context, ArrayList<EmergencyEventServiceDto> details) {
         super(context, 0, details);
         this.context = context;
         this.details = details;
@@ -37,7 +38,7 @@ public class ActivitiesAdapter extends ArrayAdapter<EmergencyEventActivityDto> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.activities_list_item, parent, false);
 
-        final EmergencyEventActivityDto activityDto = details.get(position);
+        final EmergencyEventServiceDto activityDto = details.get(position);
 
         activityName = rowView.findViewById(R.id.activity_name);
         activityName.setText(activityDto.getName());

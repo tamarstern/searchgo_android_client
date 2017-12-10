@@ -14,8 +14,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
-import com.searchgo.fragments.com.searchgo.fragments.interfaces.IDateSelectorListener;
-
 /**
  * Created by tamar.twena on 11/23/2017.
  */

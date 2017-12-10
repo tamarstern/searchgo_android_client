@@ -1,4 +1,4 @@
-package com.searchgo.fragments.com.searchgo.fragments.interfaces;
+package com.searchgo.fragments;
 
 import java.util.Date;
 

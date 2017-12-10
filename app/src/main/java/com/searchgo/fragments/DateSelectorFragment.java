@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.searchgo.R;
-import com.searchgo.fragments.com.searchgo.fragments.interfaces.IDateSelectorListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
