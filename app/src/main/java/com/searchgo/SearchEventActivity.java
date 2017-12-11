@@ -41,7 +41,7 @@ public class SearchEventActivity extends FragmentActivity implements OnMapReadyC
         mActionBarToolbar.setTitle(R.string.search_event_details_ttl);
 
         Intent intent = getIntent();
-        EmergencyEventActivityDto eventDto = (EmergencyEventActivityDto)intent.getExtras().get(EVENT_DTO);
+        EmergencyEventServiceDto eventDto = (EmergencyEventServiceDto)intent.getExtras().get(EVENT_DTO);
         address = eventDto.getAddress();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()

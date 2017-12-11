@@ -43,16 +43,6 @@ public class MyEventsFragment extends Fragment {
 
         callServerOnStart();
 
-        /*ArrayList<EmergencyEventActivityDto> activities = new ArrayList<>();
-        EmergencyEventActivityDto activity1 = new EmergencyEventActivityDto();
-        activity1.setName("name1");
-        activities.add(activity1);
-        EmergencyEventActivityDto activity2 = new EmergencyEventActivityDto();
-        activity2.setName("name2");
-        activities.add(activity2);
-
-        ActivitiesAdapter adapter = new ActivitiesAdapter(getActivity(), activities);
-        listView.setAdapter(adapter);*/
         return inflate;
     }
 
@@ -67,7 +57,7 @@ public class MyEventsFragment extends Fragment {
         SearchGoApplication app = (SearchGoApplication)getActivity().getApplication();
         EmergencyEventRepository emergencyEventRepository = EmergencyEventServiceDtoFactory.getEmergencyEventRepository(app);
 
-        emergencyEventRepository.findWithFilter("{\"where\" : {\"name\" : { \"like\" : \"name\"}} }", new ListCallback<EmergencyEventServiceDto>() {
+        emergencyEventRepository.findEventsUserCreated(new ListCallback<EmergencyEventServiceDto>() {
             @Override
             public void onSuccess(List<EmergencyEventServiceDto> dtos) {
                 ArrayList<EmergencyEventServiceDto> listDtos = new ArrayList<>();

@@ -45,6 +45,10 @@ public class EmergencyEventRepository extends ModelRepository<EmergencyEventServ
         return contract;
     }
 
+    public void findEventsUserCreated(final ListCallback<EmergencyEventServiceDto> callback) {
+        findWithFilter("{\"where\" : {\"name\" : { \"like\" : \"name\"}} }",callback);
+    }
+
     public void findWithFilter(String filter, final ListCallback<EmergencyEventServiceDto> callback) {
         invokeStaticMethod("greet", ImmutableMap.of("filter", filter), new Adapter.Callback() {
 
@@ -56,12 +60,7 @@ public class EmergencyEventRepository extends ModelRepository<EmergencyEventServ
             @Override
             public void onSuccess(String response) {
 
-                JsonParser parser = new JsonParser();
-                JsonElement parsedElem = parser.parse(response);
-                JsonObject resultAsJsonObject = parsedElem.getAsJsonObject();
-                JsonElement listElem = resultAsJsonObject.get(LIST_ITEMS_ELEM);
-                JsonArray resultJsonArray = listElem.getAsJsonArray();
-                Iterator<JsonElement> iterator = resultJsonArray.iterator();
+                Iterator<JsonElement> iterator = getJsonElementIterator(response);
                 ArrayList<EmergencyEventServiceDto> listToReturn = new ArrayList<EmergencyEventServiceDto>();
                 while(iterator.hasNext()) {
                     JsonObject nextElem = iterator.next().getAsJsonObject();
@@ -69,6 +68,16 @@ public class EmergencyEventRepository extends ModelRepository<EmergencyEventServ
                     listToReturn.add(dto);
                 }
                 callback.onSuccess(listToReturn);
+            }
+
+            @NonNull
+            private Iterator<JsonElement> getJsonElementIterator(String response) {
+                JsonParser parser = new JsonParser();
+                JsonElement parsedElem = parser.parse(response);
+                JsonObject resultAsJsonObject = parsedElem.getAsJsonObject();
+                JsonElement listElem = resultAsJsonObject.get(LIST_ITEMS_ELEM);
+                JsonArray resultJsonArray = listElem.getAsJsonArray();
+                return resultJsonArray.iterator();
             }
         });
     }

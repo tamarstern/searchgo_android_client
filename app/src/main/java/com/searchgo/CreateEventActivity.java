@@ -24,6 +24,7 @@ import com.searchgo.dto.activity.EmergencyEventActivityDto;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
 import com.searchgo.dto.service.EmergencyEventServiceDtoFactory;
 import com.searchgo.fragments.DateSelectorFragment;
+import com.searchgo.utils.ActivityUtils;
 import com.searchgo.utils.ImageSelectorUtils;
 import com.strongloop.android.loopback.Model;
 import com.strongloop.android.loopback.RestAdapter;
@@ -55,14 +56,17 @@ public class CreateEventActivity extends AppCompatActivity {
 
         radioCategoryGroup = (RadioGroup) findViewById(R.id.radio_category_group);
 
+        final Activity activity = this;
+
         saveAndContinue = (Button)findViewById(R.id.save_and_continue);
         saveAndContinue.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 initEventNameOnSave();
                 initCategoryOnSave();
                 initLastSeenOnSave();
-                sendSaveEventRequest();
-                startEventPageActivity();
+                EmergencyEventServiceDto serviceDto = getEmergencyEventServiceDto();
+                sendSaveEventRequest(serviceDto);
+                ActivityUtils.startEventPageActivity(activity, serviceDto);
             }
         });
 
@@ -83,10 +87,8 @@ public class CreateEventActivity extends AppCompatActivity {
         eventImage = (ImageView)findViewById(R.id.event_picture);
     }
 
-    private void sendSaveEventRequest() {
+    private void sendSaveEventRequest(EmergencyEventServiceDto serviceDto) {
         final Activity activity = this;
-        SearchGoApplication app = (SearchGoApplication)this.getApplication();
-        EmergencyEventServiceDto serviceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventService(app, event);
         serviceDto.save(new Model.Callback() {
 
             @Override
@@ -104,6 +106,11 @@ public class CreateEventActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private EmergencyEventServiceDto getEmergencyEventServiceDto() {
+        SearchGoApplication app = (SearchGoApplication)this.getApplication();
+        return EmergencyEventServiceDtoFactory.generateEmergencyEventService(app, event);
     }
 
 
@@ -138,11 +145,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 this);
     }
 
-    private void startEventPageActivity(){
-         Intent intent = new Intent(this, SearchEventActivity.class);
-         intent.putExtra(EVENT_DTO, event);
-         startActivity(intent);
-    }
+
 
     private void initEventNameOnSave() {
         String name = eventNameEditText.getText().toString();
