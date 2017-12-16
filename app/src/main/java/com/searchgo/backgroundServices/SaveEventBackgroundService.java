@@ -1,16 +1,13 @@
 package com.searchgo.backgroundServices;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.searchgo.application.SearchGoApplication;
-import com.searchgo.dto.activity.EmergencyEventActivityDto;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
-import com.searchgo.dto.service.EmergencyEventServiceDtoFactory;
 import com.strongloop.android.loopback.Model;
 
 import java.util.HashSet;
@@ -32,12 +29,11 @@ public class SaveEventBackgroundService extends IntentService {
             Log.i("StartSaveEventService", "start StartSaveEventService");
 
             SearchGoApplication app = (SearchGoApplication) this.getApplication();
-            final HashSet<EmergencyEventActivityDto> searchEventsToSaveContainer = app.getSearchEventsToSave();
-            HashSet<EmergencyEventActivityDto> containerToItertateOn = new HashSet<>();
+            final HashSet<EmergencyEventServiceDto> searchEventsToSaveContainer = app.getSearchEventsToSave();
+            HashSet<EmergencyEventServiceDto> containerToItertateOn = new HashSet<>();
             containerToItertateOn.addAll(searchEventsToSaveContainer);
-            for (final EmergencyEventActivityDto searchEventsToSave : containerToItertateOn) {
-                EmergencyEventServiceDto serviceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventService(app, searchEventsToSave);
-                serviceDto.save(new Model.Callback() {
+            for (final EmergencyEventServiceDto searchEventsToSave : containerToItertateOn) {
+                searchEventsToSave.save(new Model.Callback() {
 
                     @Override
                     public void onSuccess() {

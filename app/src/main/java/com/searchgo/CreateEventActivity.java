@@ -16,18 +16,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.searchgo.application.SearchGoApplication;
 import com.searchgo.backgroundServices.BackgroundServiceScheduler;
-import com.searchgo.dto.activity.EmergencyEventActivityDto;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
-import com.searchgo.dto.service.EmergencyEventServiceDtoFactory;
 import com.searchgo.fragments.DateSelectorFragment;
 import com.searchgo.utils.ActivityUtils;
 import com.searchgo.utils.ImageSelectorUtils;
 import com.strongloop.android.loopback.Model;
-import com.strongloop.android.loopback.RestAdapter;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -40,7 +36,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private Button addImageButton;
     private ImageView eventImage;
     final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
-    private EmergencyEventActivityDto event;
+    private EmergencyEventServiceDto event;
     private RadioGroup radioCategoryGroup;
     private EditText eventNameEditText;
 
@@ -52,9 +48,9 @@ public class CreateEventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_event);
 
         Intent intent = getIntent();
-        event = (EmergencyEventActivityDto)intent.getExtras().get(EVENT_DTO);
+        event = (EmergencyEventServiceDto)intent.getExtras().get(EVENT_DTO);
 
-        radioCategoryGroup = (RadioGroup) findViewById(R.id.radio_category_group);
+        radioCategoryGroup = findViewById(R.id.radio_category_group);
 
         final Activity activity = this;
 
@@ -64,9 +60,9 @@ public class CreateEventActivity extends AppCompatActivity {
                 initEventNameOnSave();
                 initCategoryOnSave();
                 initLastSeenOnSave();
-                EmergencyEventServiceDto serviceDto = getEmergencyEventServiceDto();
-                sendSaveEventRequest(serviceDto);
-                ActivityUtils.startEventPageActivity(activity, serviceDto);
+
+                sendSaveEventRequest(event);
+                ActivityUtils.startEventPageActivity(activity, event);
             }
         });
 
@@ -87,7 +83,7 @@ public class CreateEventActivity extends AppCompatActivity {
         eventImage = (ImageView)findViewById(R.id.event_picture);
     }
 
-    private void sendSaveEventRequest(EmergencyEventServiceDto serviceDto) {
+    private void sendSaveEventRequest(final EmergencyEventServiceDto serviceDto) {
         final Activity activity = this;
         serviceDto.save(new Model.Callback() {
 
@@ -98,19 +94,14 @@ public class CreateEventActivity extends AppCompatActivity {
             @Override
             public void onError(Throwable t) {
                 Log.e("ErrorOnSave", "Cannot save Emergency Event model.", t);
-                HashSet<EmergencyEventActivityDto> searchEventsToSave = ((SearchGoApplication) activity.getApplication()).getSearchEventsToSave();
-                searchEventsToSave.add(event);
+                HashSet<EmergencyEventServiceDto> searchEventsToSave = ((SearchGoApplication) activity.getApplication()).getSearchEventsToSave();
+                searchEventsToSave.add(serviceDto);
                 if(!BackgroundServiceScheduler.isSaveEventServiceRunning()) {
                     BackgroundServiceScheduler.scheduleSaveEmergencyEventService(activity);
                 }
             }
         });
 
-    }
-
-    private EmergencyEventServiceDto getEmergencyEventServiceDto() {
-        SearchGoApplication app = (SearchGoApplication)this.getApplication();
-        return EmergencyEventServiceDtoFactory.generateEmergencyEventService(app, event);
     }
 
 

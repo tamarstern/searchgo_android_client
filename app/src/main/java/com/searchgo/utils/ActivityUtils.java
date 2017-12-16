@@ -1,11 +1,9 @@
 package com.searchgo.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
 import com.searchgo.SearchEventActivity;
-import com.searchgo.dto.activity.EmergencyEventActivityDto;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
 
 import static com.searchgo.constants.ApplicationConstants.EVENT_DTO;

@@ -16,7 +16,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.searchgo.dto.activity.EmergencyEventActivityDto;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
 
 import java.io.IOException;

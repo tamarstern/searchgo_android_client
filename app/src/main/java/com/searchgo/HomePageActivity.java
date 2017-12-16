@@ -17,8 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -34,12 +32,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.searchgo.dto.activity.EmergencyEventActivityDto;
-import com.searchgo.dto.activity.EmergencyEventActivityDtoFactory;
-import com.searchgo.fragments.HomePageFragment;
+import com.searchgo.application.SearchGoApplication;
+import com.searchgo.dto.service.EmergencyEventServiceDto;
+import com.searchgo.dto.service.EmergencyEventServiceDtoFactory;
 import com.searchgo.fragments.PageAdapter;
 
 import java.util.HashMap;
@@ -185,8 +182,10 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 String address = place.getAddress().toString();
                 Intent intent = new Intent(this, CreateEventActivity.class);
-                EmergencyEventActivityDto event = EmergencyEventActivityDtoFactory.generateEmergencyEvent(address);
-                intent.putExtra(EVENT_DTO, event);
+                SearchGoApplication app = (SearchGoApplication)this.getApplication();
+                EmergencyEventServiceDto emergencyEventServiceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventServiceDto(app);
+                emergencyEventServiceDto.setAddress(address);
+                intent.putExtra(EVENT_DTO, emergencyEventServiceDto);
                 startActivity(intent);
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);

@@ -3,8 +3,6 @@ package com.searchgo.fragments;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,16 +10,13 @@ import android.widget.ListView;
 
 import com.searchgo.R;
 import com.searchgo.application.SearchGoApplication;
-import com.searchgo.dto.activity.EmergencyEventActivityDto;
 import com.searchgo.dto.service.EmergencyEventRepository;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
 import com.searchgo.dto.service.EmergencyEventServiceDtoFactory;
 import com.searchgo.listAdapters.ActivitiesAdapter;
 import com.strongloop.android.loopback.callbacks.ListCallback;
-import com.strongloop.android.remoting.adapters.Adapter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
