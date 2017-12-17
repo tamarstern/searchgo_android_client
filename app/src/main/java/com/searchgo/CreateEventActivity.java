@@ -20,6 +20,7 @@ import android.widget.RadioGroup;
 import com.searchgo.application.SearchGoApplication;
 import com.searchgo.backgroundServices.BackgroundServiceScheduler;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
+import com.searchgo.dto.service.EmergencyEventServiceDtoFactory;
 import com.searchgo.fragments.DateSelectorFragment;
 import com.searchgo.utils.ActivityUtils;
 import com.searchgo.utils.ImageSelectorUtils;
@@ -48,28 +49,30 @@ public class CreateEventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_event);
 
         Intent intent = getIntent();
-        event = (EmergencyEventServiceDto)intent.getExtras().get(EVENT_DTO);
+        event = (EmergencyEventServiceDto)intent.getExtras().get(EVENT_DTO)
+        ;
 
         radioCategoryGroup = findViewById(R.id.radio_category_group);
 
         final Activity activity = this;
 
         saveAndContinue = (Button)findViewById(R.id.save_and_continue);
+        final SearchGoApplication application = (SearchGoApplication)this.getApplication();
         saveAndContinue.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 initEventNameOnSave();
                 initCategoryOnSave();
                 initLastSeenOnSave();
-
-                sendSaveEventRequest(event);
+                EmergencyEventServiceDto emergencyEventServiceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventServiceDto(application, event);
+                sendSaveEventRequest(emergencyEventServiceDto);
                 ActivityUtils.startEventPageActivity(activity, event);
             }
         });
 
 
-        eventNameEditText = (EditText) findViewById(R.id.enter_event_name);
+        eventNameEditText = findViewById(R.id.enter_event_name);
 
-        addImageButton = (Button) findViewById(R.id.add_picture_btn);
+        addImageButton = findViewById(R.id.add_picture_btn);
         addImageButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -80,7 +83,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
         });
 
-        eventImage = (ImageView)findViewById(R.id.event_picture);
+        eventImage = findViewById(R.id.event_picture);
     }
 
     private void sendSaveEventRequest(final EmergencyEventServiceDto serviceDto) {
