@@ -14,5 +14,7 @@ public class ApplicationConstants {
 
     public static String SUCCESS_RESPONSE_CODE = "Success";
 
+    public static final String ACCESS_TOKEN =  "ACCESS_TOKEN";
+
 
 }

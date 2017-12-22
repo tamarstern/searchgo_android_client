@@ -5,6 +5,7 @@ import android.app.Application;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
 import com.strongloop.android.loopback.RestAdapter;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 import static com.searchgo.constants.ServiceConstants.SERVER_API_URL;
@@ -19,6 +20,8 @@ public class SearchGoApplication extends Application{
 
     private HashSet<EmergencyEventServiceDto> searchEventsToSave = new HashSet<EmergencyEventServiceDto>();
 
+    private HashSet<EmergencyEventServiceDto> myEvents = new HashSet<EmergencyEventServiceDto>();
+
     public RestAdapter getLoopBackAdapter() {
         if (adapter == null) {
 
@@ -31,5 +34,14 @@ public class SearchGoApplication extends Application{
 
     public HashSet<EmergencyEventServiceDto> getSearchEventsToSave() {
         return searchEventsToSave;
+    }
+
+    public HashSet<EmergencyEventServiceDto> getMyEvents() {
+        return myEvents;
+    }
+
+    public void resetMyEvents(Collection<EmergencyEventServiceDto> dtos) {
+        myEvents.clear();
+        myEvents.addAll(dtos);
     }
 }

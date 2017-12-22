@@ -32,4 +32,18 @@ public class BackgroundServiceScheduler {
     public static boolean isSaveEventServiceRunning() {
         return saveEventServiceRunning;
     }
+
+    public static void scheduleGetMyEventsService(Activity activity) {
+
+        saveEventServiceRunning = true;
+
+        long firstMillis = System.currentTimeMillis();
+        AlarmManager alarm = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+
+        Intent getMyEventsReceiver = new Intent(activity.getApplicationContext(), GetMyEventsEventReceiver.class);
+        final PendingIntent saveEventIntent = PendingIntent.getBroadcast(activity, GetMyEventsEventReceiver.REQUEST_CODE,
+                getMyEventsReceiver, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
+                3*60*1000, saveEventIntent);
+    }
 }

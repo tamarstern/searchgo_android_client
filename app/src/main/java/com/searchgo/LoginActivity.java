@@ -6,19 +6,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.searchgo.dto.service.EmergencyEventRepository;
+import com.searchgo.backgroundServices.BackgroundServiceScheduler;
 import com.searchgo.tasks.TokenRetrievalTask;
+import com.searchgo.utils.LoginUtils;
 
 public class LoginActivity extends AppCompatActivity implements ITokenRetrieveEnd {
 
-    private TextView info;
     private LoginButton loginButton;
 
     private CallbackManager callbackManager;
@@ -28,10 +27,18 @@ public class LoginActivity extends AppCompatActivity implements ITokenRetrieveEn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        if(isLoggedIn()) {
+            startMainFlow();
+        } else {
+            doFacebookLogin();
+        }
+
+
+
+    }
+
+    private void doFacebookLogin() {
         callbackManager = CallbackManager.Factory.create();
-
-
-        info = findViewById(R.id.info);
         loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions("email");
 
@@ -39,13 +46,6 @@ public class LoginActivity extends AppCompatActivity implements ITokenRetrieveEn
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                info.setText(
-                        "User ID: "
-                                + loginResult.getAccessToken().getUserId()
-                                + "\n" +
-                                "Auth Token: "
-                                + loginResult.getAccessToken().getToken()
-                );
                 new TokenRetrievalTask(LoginActivity.this, LoginActivity.this).execute(loginResult.getAccessToken().getToken());
             }
 
@@ -56,10 +56,9 @@ public class LoginActivity extends AppCompatActivity implements ITokenRetrieveEn
 
             @Override
             public void onError(FacebookException exception) {
-                // App code
+                Log.e("errFaceLogin", "error on facebook login", exception);
             }
         });
-
     }
 
 
@@ -70,8 +69,21 @@ public class LoginActivity extends AppCompatActivity implements ITokenRetrieveEn
     }
 
     public void tokenRetrieveEnd(String response) {
+        startMainFlow();
+
+    }
+
+    private void startMainFlow() {
         //TODO - Get current user by user ID in shared preferences before openning home page
+        String accessToken = LoginUtils.getAccessToken(this);
+        LoginUtils.initAccessTokenForRestCalls(accessToken, this);
         Intent intent = new Intent(this, HomePageActivity.class);
         this.startActivity(intent);
+        BackgroundServiceScheduler.scheduleGetMyEventsService(this);
+    }
+
+    public boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
     }
 }

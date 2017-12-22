@@ -5,36 +5,34 @@ package com.searchgo.tasks;
  */
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.searchgo.ITokenRetrieveEnd;
-import com.searchgo.application.SearchGoApplication;
 import com.searchgo.constants.ApplicationConstants;
 import com.searchgo.constants.ServiceConstants;
-
-import org.json.JSONArray;
 
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import com.strongloop.android.loopback.RestAdapter;
+
+import com.searchgo.utils.LoginUtils;
+
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
 public class TokenRetrievalTask extends AsyncTask<String, String, String> {
 
+    public static final String ACCESS_TOKEN_HEADER = "access_token";
+    public static final String USER_ID_HEADER = "userId";
+    public static final String UTF_8_ENCODING = "UTF-8";
     private ITokenRetrieveEnd tokenRetrieved;
     private static java.net.CookieManager msCookieManager = new java.net.CookieManager();
-    private RestAdapter adapter;
     private Activity activity;
 
     public TokenRetrievalTask(ITokenRetrieveEnd activityContext, Activity context) {
         this.tokenRetrieved=activityContext;
-        SearchGoApplication app = (SearchGoApplication) context.getApplication();
-        this.adapter = app.getLoopBackAdapter();
         this.activity = context;
     }
     protected String doInBackground(String... tokens) {
@@ -51,12 +49,13 @@ public class TokenRetrievalTask extends AsyncTask<String, String, String> {
             if (cookiesHeader != null) {
                 for (String cookie : cookiesHeader) {
                     msCookieManager.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
-
-                    if (HttpCookie.parse(cookie).get(0).getName().equalsIgnoreCase("access_token")) {
-                        adapter.setAccessToken(java.net.URLDecoder.decode(HttpCookie.parse(cookie).get(0).getValue(),"UTF-8").split("\\.")[0].split(":")[1]);
+                    if (HttpCookie.parse(cookie).get(0).getName().equalsIgnoreCase(ACCESS_TOKEN_HEADER)) {
+                        String accessToken = URLDecoder.decode(HttpCookie.parse(cookie).get(0).getValue(), UTF_8_ENCODING).split("\\.")[0].split(":")[1];
+                        LoginUtils.initAccessTokenForRestCalls(accessToken, activity);
+                        LoginUtils.StoreAccessToken(accessToken, activity);
                     }
-                    if (HttpCookie.parse(cookie).get(0).getName().equalsIgnoreCase("userId")) {
-                        result=java.net.URLDecoder.decode(HttpCookie.parse(cookie).get(0).getValue(),"UTF-8").split("\\.")[0].split(":")[1];
+                    if (HttpCookie.parse(cookie).get(0).getName().equalsIgnoreCase(USER_ID_HEADER)) {
+                        result=java.net.URLDecoder.decode(HttpCookie.parse(cookie).get(0).getValue(), UTF_8_ENCODING).split("\\.")[0].split(":")[1];
                     }
                 }
             }
@@ -64,17 +63,13 @@ public class TokenRetrievalTask extends AsyncTask<String, String, String> {
 
         }catch(Exception e) {
             String msg = "Messup when calling home";
-
             Log.e("LoopBack", msg, e);
         }
         return result;
     }
 
     protected void onPostExecute(String result) {
-        SharedPreferences.Editor editor = activity.getApplicationContext().getSharedPreferences(ApplicationConstants.USER_DETAILS_PREFERENCES, Context.MODE_PRIVATE).edit();
-        String json = new JSONArray().put(result).toString();
-        editor.putString(ApplicationConstants.USER_ID, json);
-        editor.commit();
+        LoginUtils.StoreUserId(result, activity);
         tokenRetrieved.tokenRetrieveEnd(ApplicationConstants.SUCCESS_RESPONSE_CODE);
     }
 

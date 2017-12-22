@@ -35,6 +35,15 @@
             android:name=".backgroundServices.SaveEventBackgroundService"
             android:exported="false" />
 
+        <receiver
+            android:name=".backgroundServices.GetMyEventsEventReceiver"
+            android:process=":remote" />
+
+        <service
+            android:name=".backgroundServices.GetMyEventsBackgroundService"
+            android:exported="false" />
+
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

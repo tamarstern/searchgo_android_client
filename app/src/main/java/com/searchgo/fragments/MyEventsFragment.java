@@ -17,6 +17,8 @@ import com.searchgo.listAdapters.ActivitiesAdapter;
 import com.strongloop.android.loopback.callbacks.ListCallback;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -49,15 +51,18 @@ public class MyEventsFragment extends Fragment {
 
 
     private void callServerOnStart() {
-        SearchGoApplication app = (SearchGoApplication)getActivity().getApplication();
+        final SearchGoApplication app = (SearchGoApplication)getActivity().getApplication();
+        HashSet<EmergencyEventServiceDto> myEvents = app.getMyEvents();
+        if(myEvents.size() > 0) {
+            initEventsFromServer(myEvents);
+        }
         EmergencyEventRepository emergencyEventRepository = EmergencyEventServiceDtoFactory.getEmergencyEventRepository(app);
 
         emergencyEventRepository.findEventsUserCreated(new ListCallback<EmergencyEventServiceDto>() {
             @Override
             public void onSuccess(List<EmergencyEventServiceDto> dtos) {
-                ArrayList<EmergencyEventServiceDto> listDtos = new ArrayList<>();
-                listDtos.addAll(dtos);
-                initListView(listDtos);
+                initEventsFromServer(dtos);
+                app.resetMyEvents(dtos);
             }
 
             @Override
@@ -65,6 +70,12 @@ public class MyEventsFragment extends Fragment {
 
             }
         });
+    }
+
+    private void initEventsFromServer(Collection<EmergencyEventServiceDto> myEvents) {
+        ArrayList<EmergencyEventServiceDto> listDtos = new ArrayList<>();
+        listDtos.addAll(myEvents);
+        initListView(listDtos);
     }
 
 
