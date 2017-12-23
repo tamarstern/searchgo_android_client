@@ -1,5 +1,6 @@
 package com.searchgo;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -81,11 +82,14 @@ public class SearchEventActivity extends FragmentActivity implements OnMapReadyC
                     Log.i("MarkerAdded" , point.latitude+"---"+ point.longitude);
                 }
             });
-            Intent result = new Intent();
-            result.putExtra(LAT, addressToDisplay.latitude);
-            result.putExtra(LONG, addressToDisplay.longitude);
-            setResult(1, result);
-            finish();
+            ComponentName callingActivity = getCallingActivity();
+            if (callingActivity != null) {
+                Intent result = new Intent();
+                result.putExtra(LAT, addressToDisplay.latitude);
+                result.putExtra(LONG, addressToDisplay.longitude);
+                setResult(1, result);
+                finish();
+            }
         }
     }
 
