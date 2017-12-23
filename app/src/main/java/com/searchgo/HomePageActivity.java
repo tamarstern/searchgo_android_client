@@ -49,6 +49,7 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private static int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    public final static int SEARCH_FOR_LOCATION_FOR_EVENT_CREATION = 8000;
     final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
     private static final int DEFAULT_ZOOM = 15;
     private GoogleApiClient mGoogleApiClient;

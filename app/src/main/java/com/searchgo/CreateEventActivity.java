@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.searchgo.application.SearchGoApplication;
 import com.searchgo.backgroundServices.BackgroundServiceScheduler;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
@@ -27,6 +28,7 @@ import com.searchgo.utils.ImageSelectorUtils;
 import com.strongloop.android.loopback.Model;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import static com.searchgo.constants.ApplicationConstants.EVENT_DTO;
@@ -65,10 +67,14 @@ public class CreateEventActivity extends AppCompatActivity {
                 initLastSeenOnSave();
                 EmergencyEventServiceDto emergencyEventServiceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventServiceDto(application, event);
                 sendSaveEventRequest(emergencyEventServiceDto);
-                ActivityUtils.startEventPageActivity(activity, event);
+//                ActivityUtils.startEventPageActivity(activity, event);
+
             }
         });
 
+        Intent intentSearch = new Intent(activity, SearchEventActivity.class);
+        intentSearch.putExtra(EVENT_DTO, event);
+        startActivityForResult(intentSearch, HomePageActivity.SEARCH_FOR_LOCATION_FOR_EVENT_CREATION);
 
         eventNameEditText = findViewById(R.id.enter_event_name);
 
@@ -85,6 +91,8 @@ public class CreateEventActivity extends AppCompatActivity {
 
         eventImage = findViewById(R.id.event_picture);
     }
+
+
 
     private void sendSaveEventRequest(final EmergencyEventServiceDto serviceDto) {
         final Activity activity = this;
@@ -135,8 +143,17 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Bitmap thumbnail = ImageSelectorUtils.initializeImage(requestCode, resultCode, data, this.eventImage, this.addImageButton,
-                this);
+        if (requestCode == HomePageActivity.SEARCH_FOR_LOCATION_FOR_EVENT_CREATION) {
+            double geoLat = data.getDoubleExtra(SearchEventActivity.LAT, 0);
+            double geoLong = data.getDoubleExtra(SearchEventActivity.LONG, 0);
+            HashMap<String, Double> geoMap = new HashMap<>();
+            geoMap.put("lat", geoLat);
+            geoMap.put("lng", geoLong);
+            event.setStartingPoint(geoMap);
+        } else {
+            Bitmap thumbnail = ImageSelectorUtils.initializeImage(requestCode, resultCode, data, this.eventImage, this.addImageButton,
+                    this);
+        }
     }
 
 

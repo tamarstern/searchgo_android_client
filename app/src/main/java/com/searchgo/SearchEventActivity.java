@@ -25,6 +25,8 @@ import static com.searchgo.constants.ApplicationConstants.EVENT_DTO;
 
 public class SearchEventActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    public static final String LAT = "lat";
+    public static final String LONG = "long";
     private GoogleMap mMap;
 
     private static final String TAG = "ErrAddrDetails";
@@ -79,6 +81,11 @@ public class SearchEventActivity extends FragmentActivity implements OnMapReadyC
                     Log.i("MarkerAdded" , point.latitude+"---"+ point.longitude);
                 }
             });
+            Intent result = new Intent();
+            result.putExtra(LAT, addressToDisplay.latitude);
+            result.putExtra(LONG, addressToDisplay.longitude);
+            setResult(1, result);
+            finish();
         }
     }
 

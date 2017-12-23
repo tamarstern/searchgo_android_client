@@ -24,6 +24,7 @@ public class EmergencyEventServiceDtoFactory {
         serviceEvent.setLastSeen(dto.getLastSeen());
         serviceEvent.setCreatedOn(dto.getCreatedOn());
         serviceEvent.setCategory(dto.getCategory());
+        serviceEvent.setStartingPoint(dto.getStartingPoint());
         return serviceEvent;
     }
 
