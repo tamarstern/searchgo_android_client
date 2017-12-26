@@ -32,14 +32,18 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.searchgo.application.SearchGoApplication;
+import com.searchgo.dto.service.EmergencyEventRepository;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
 import com.searchgo.dto.service.EmergencyEventServiceDtoFactory;
 import com.searchgo.fragments.PageAdapter;
+import com.strongloop.android.loopback.callbacks.ListCallback;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.searchgo.constants.ApplicationConstants.EVENT_DTO;
@@ -133,9 +137,11 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
                     if (task.isSuccessful()) {
                         // Set the map's camera position to the current location of the device.
                         mLastKnownLocation = task.getResult();
+                        LatLng latLng = new LatLng(mLastKnownLocation.getLatitude(),
+                                mLastKnownLocation.getLongitude());
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(mLastKnownLocation.getLatitude(),
-                                        mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                                latLng, DEFAULT_ZOOM));
+                        getNearByEvents(latLng, 100);
                     } else {
                         Log.d(TAG, "Current location is null. Using defaults.");
 //                            Log.e(TAG, "Exception: %s", task.getException());
@@ -149,6 +155,38 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
         } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
+    }
+
+    private void showNearByEvents(List<EmergencyEventServiceDto> events) {
+        if (events != null) {
+            for (EmergencyEventServiceDto ev : events) {
+                HashMap<String, Double> startingPoint = ev.getStartingPoint();
+                if (startingPoint != null) {
+                    Double lat = startingPoint.containsKey("lat") ? startingPoint.get("lat") : 0.0;
+                    Double lng = startingPoint.containsKey("lng") ? startingPoint.get("lng") : 0.0;
+                    LatLng loc = new LatLng(lat, lng);
+                    mMap.addMarker(new MarkerOptions()
+                            .title(ev.getName())
+                            .position(loc)
+                            .snippet(ev.getDescription()));
+                }
+            }
+        }
+    }
+
+    private void getNearByEvents(LatLng latLng, int radius) {
+        EmergencyEventRepository emergencyEventRepository = EmergencyEventServiceDtoFactory.getEmergencyEventRepository((SearchGoApplication) this.getApplication());
+        emergencyEventRepository.getNearByEvents(latLng, radius, new ListCallback<EmergencyEventServiceDto>() {
+            @Override
+            public void onSuccess(List<EmergencyEventServiceDto> objects) {
+                showNearByEvents(objects);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                Log.e("failGetMyEvents", "failed to get nearby events", t);
+            }
+        });
     }
 
     @Override

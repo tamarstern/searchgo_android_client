@@ -3,6 +3,7 @@ package com.searchgo.dto.service;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import static com.searchgo.constants.ServiceConstants.LIST_ITEMS_ELEM;
@@ -48,6 +50,35 @@ public class EmergencyEventRepository extends ModelRepository<EmergencyEventServ
     public void findEventsUserCreated(final ListCallback<EmergencyEventServiceDto> callback) {
         findWithFilter("{\"where\" : {\"name\" : { \"like\" : \"name\"}} }",callback);
     }
+
+    public void getNearByEvents(LatLng from, int radius, final ListCallback<EmergencyEventServiceDto> callback) {
+        findWithFilter("{\"where\" : {" +
+                "\"startingPoint\" : {" +
+                "\"near\" : {" +
+                "\"lat\" : " + from.latitude + "," +
+                "\"lng\" : " + from.longitude +
+                "}," +
+                "\"maxDistance\" : " + radius + "," +
+                "\"unit\" : \"kilometers\"" +
+                "}" +
+                "}" +
+                "}", callback);
+    }
+    /*
+    * {
+	"where": {
+		"startingPoint": {
+			"near": {
+				"lat": 32.0852999,
+				"lng": 34.7817676
+			},
+			"maxDistance": 20,
+			"unit": "kilometers"
+		}
+	}
+}
+    *
+    * */
 
     public void findWithFilter(String filter, final ListCallback<EmergencyEventServiceDto> callback) {
         invokeStaticMethod("greet", ImmutableMap.of("filter", filter), new Adapter.Callback() {
@@ -102,6 +133,18 @@ public class EmergencyEventRepository extends ModelRepository<EmergencyEventServ
         String lastSeen = nextElem.get("lastSeen").getAsString();
         Date lastSeenDate = convertStringToDate(lastSeen);
         dto.setLastSeen(lastSeenDate);
+        JsonElement startingPoint = nextElem.get("startingPoint");
+        if(startingPoint != null && !(startingPoint instanceof JsonNull)) {
+            if (startingPoint.isJsonObject()) {
+                HashMap<String, Double> loc = new HashMap<>();
+                JsonObject pointObject = startingPoint.getAsJsonObject();
+                double lat = pointObject.get("lat").getAsDouble();
+                double lng = pointObject.get("lng").getAsDouble();
+                loc.put("lat", lat);
+                loc.put("lng", lng);
+                dto.setStartingPoint(loc);
+            }
+        }
         return dto;
     }
 
