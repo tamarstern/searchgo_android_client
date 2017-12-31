@@ -25,6 +25,7 @@ import com.searchgo.dto.service.EmergencyEventServiceDtoFactory;
 import com.searchgo.fragments.DateSelectorFragment;
 import com.searchgo.utils.ActivityUtils;
 import com.searchgo.utils.ImageSelectorUtils;
+import com.searchgo.utils.LoginUtils;
 import com.strongloop.android.loopback.Model;
 
 import java.util.Date;
@@ -42,6 +43,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private EmergencyEventServiceDto event;
     private RadioGroup radioCategoryGroup;
     private EditText eventNameEditText;
+    private Bitmap eventPicture;
 
 
 
@@ -67,14 +69,10 @@ public class CreateEventActivity extends AppCompatActivity {
                 initLastSeenOnSave();
                 EmergencyEventServiceDto emergencyEventServiceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventServiceDto(application, event);
                 sendSaveEventRequest(emergencyEventServiceDto);
-//                ActivityUtils.startEventPageActivity(activity, event);
+                startEventPage(activity);
 
             }
         });
-
-        Intent intentSearch = new Intent(activity, SearchEventActivity.class);
-        intentSearch.putExtra(EVENT_DTO, event);
-        startActivityForResult(intentSearch, HomePageActivity.SEARCH_FOR_LOCATION_FOR_EVENT_CREATION);
 
         eventNameEditText = findViewById(R.id.enter_event_name);
 
@@ -92,6 +90,11 @@ public class CreateEventActivity extends AppCompatActivity {
         eventImage = findViewById(R.id.event_picture);
     }
 
+    private void startEventPage(Activity activity) {
+        Intent intentSearch = new Intent(activity, SearchEventActivity.class);
+        intentSearch.putExtra(EVENT_DTO, event);
+        startActivityForResult(intentSearch, HomePageActivity.SEARCH_FOR_LOCATION_FOR_EVENT_CREATION);
+    }
 
 
     private void sendSaveEventRequest(final EmergencyEventServiceDto serviceDto) {
@@ -100,6 +103,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess() {
+                ActivityUtils.saveEventPicture(serviceDto.getId(), eventPicture, activity, LoginUtils.getAccessToken(activity));
             }
 
             @Override
@@ -151,7 +155,7 @@ public class CreateEventActivity extends AppCompatActivity {
             geoMap.put("lng", geoLong);
             event.setStartingPoint(geoMap);
         } else {
-            Bitmap thumbnail = ImageSelectorUtils.initializeImage(requestCode, resultCode, data, this.eventImage, this.addImageButton,
+            eventPicture = ImageSelectorUtils.initializeImage(requestCode, resultCode, data, this.eventImage, this.addImageButton,
                     this);
         }
     }

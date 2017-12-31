@@ -73,6 +73,4 @@ public class TokenRetrievalTask extends AsyncTask<String, String, String> {
         tokenRetrieved.tokenRetrieveEnd(ApplicationConstants.SUCCESS_RESPONSE_CODE);
     }
 
-
-
 }

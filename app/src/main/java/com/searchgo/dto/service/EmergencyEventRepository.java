@@ -64,21 +64,6 @@ public class EmergencyEventRepository extends ModelRepository<EmergencyEventServ
                 "}" +
                 "}", callback);
     }
-    /*
-    * {
-	"where": {
-		"startingPoint": {
-			"near": {
-				"lat": 32.0852999,
-				"lng": 34.7817676
-			},
-			"maxDistance": 20,
-			"unit": "kilometers"
-		}
-	}
-}
-    *
-    * */
 
     public void findWithFilter(String filter, final ListCallback<EmergencyEventServiceDto> callback) {
         invokeStaticMethod("greet", ImmutableMap.of("filter", filter), new Adapter.Callback() {
