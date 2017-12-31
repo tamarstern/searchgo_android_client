@@ -3,7 +3,9 @@ package com.searchgo.nativeServices;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -25,8 +27,15 @@ import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.util.EntityUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.MessageFormat;
 
 import javax.net.ssl.HostnameVerifier;
@@ -122,5 +131,80 @@ public class PostEventImage {
         } catch (Exception ex) {
             Log.e("finally failed ", "finally failed", ex);
         }
+	}
+
+
+	private String uploadFile() {
+		HttpURLConnection conn = null;
+		DataOutputStream dos = null;
+		String lineEnd = "\r\n";
+		String twoHyphens = "--";
+		String boundary = "*****";
+		int bytesRead, bytesAvailable, bufferSize;
+		byte[] buffer;
+		int maxBufferSize = 10 * 1024 * 1024;
+		final File sourceFile = new File(path);
+		String serverResponseMessage = null;
+		String responce = null;
+		if (!sourceFile.isFile()) {
+
+
+			Log.e("notAFile", "not a file");
+
+			return "no file";
+		} else {
+			try {
+				FileInputStream fileInputStream = new FileInputStream(sourceFile.getPath());
+				URL url = new URL("your upload server/API url");
+				conn = (HttpURLConnection) url.openConnection();
+				conn.setDoInput(true); // Allow Inputs
+				conn.setDoOutput(true); // Allow Outputs
+				conn.setUseCaches(false); // Don't use a Cached Copy
+				conn.setRequestMethod("POST");
+				conn.setRequestProperty("Connection", "Keep-Alive");
+				conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+				conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+				conn.setRequestProperty(POST_FIELD, sourceFile.getName());
+				dos = new DataOutputStream(conn.getOutputStream());
+				dos.writeBytes(twoHyphens + boundary + lineEnd);
+				dos.writeBytes("Content-Disposition: form-data; name=\"" + POST_FIELD + "\";filename="
+						+ sourceFile.getName() + lineEnd);
+				dos.writeBytes(lineEnd);
+				bytesAvailable = fileInputStream.available();
+				bufferSize = Math.min(bytesAvailable, maxBufferSize);
+				buffer = new byte[bufferSize];
+				bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+				while (bytesRead > 0) {
+
+					dos.write(buffer, 0, bufferSize);
+					bytesAvailable = fileInputStream.available();
+					bufferSize = Math.min(bytesAvailable, maxBufferSize);
+					bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+				}
+				dos.writeBytes(lineEnd);
+				dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+				int serverResponseCode = conn.getResponseCode();
+				serverResponseMessage = conn.getResponseMessage();
+				Log.i("uploadFile", "HTTP Response is : "
+						+ serverResponseMessage + ": " + serverResponseCode);
+				if (serverResponseCode <= 200) {
+
+					//TODO - write success code
+				}
+				fileInputStream.close();
+				dos.flush();
+				dos.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			} catch (MalformedURLException ex) {
+				Log.e("uploadException", "Upload file to server Exception", e);
+				//TODO - exception handling
+			} catch (IOException e) {
+
+				Log.e("uploadException", "Upload file to server Exception", e);
+			}
+		}
+		return responce;
 	}
 }

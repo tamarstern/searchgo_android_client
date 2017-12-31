@@ -74,7 +74,7 @@ public class ImageSelectorUtils {
         return null;
     }
 
-    private static Bitmap setBitmapFromFile(ImageView mainPicture, Activity activity, Uri selectedImageUri) {
+    public static Bitmap setBitmapFromFile(ImageView mainPicture, Activity activity, Uri selectedImageUri) {
         String[] projection = { MediaColumns.DATA };
         CursorLoader cursorLoader = new CursorLoader(activity, selectedImageUri, projection, null, null, null);
         Cursor cursor = cursorLoader.loadInBackground();
