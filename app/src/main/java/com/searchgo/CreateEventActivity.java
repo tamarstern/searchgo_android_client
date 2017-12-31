@@ -69,11 +69,9 @@ public class CreateEventActivity extends AppCompatActivity {
                 initLastSeenOnSave();
                 EmergencyEventServiceDto emergencyEventServiceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventServiceDto(application, event);
                 sendSaveEventRequest(emergencyEventServiceDto);
-                startEventPage(activity);
-
             }
         });
-
+        startEventPage(activity);
         eventNameEditText = findViewById(R.id.enter_event_name);
 
         addImageButton = findViewById(R.id.add_picture_btn);

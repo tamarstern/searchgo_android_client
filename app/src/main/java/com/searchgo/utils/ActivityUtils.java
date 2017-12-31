@@ -21,12 +21,6 @@ import static com.searchgo.constants.ApplicationConstants.EVENT_DTO;
 
 public class ActivityUtils {
 
-    public static void startEventPageActivity(Context activity , EmergencyEventServiceDto dto){
-        Intent intent = new Intent(activity, SearchEventActivity.class);
-        intent.putExtra(EVENT_DTO, dto);
-        activity.startActivity(intent);
-    }
-
     public static SharedPreferences.Editor getSharedPreferencesEditor(Activity activity) {
         SharedPreferences.Editor editor = getSharedPreferences(activity).edit();
         return editor;
