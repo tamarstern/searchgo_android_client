@@ -44,6 +44,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class PostEventImage {
 
 	private final String url = ServiceConstants.EVENT_PICTURE_URL_POST;
+	private static String POST_FIELD = "filename";
 	private Bitmap image;
 	private String token;
 
@@ -134,7 +135,7 @@ public class PostEventImage {
 	}
 
 
-	private String uploadFile() {
+	public String uploadFile() {
 		HttpURLConnection conn = null;
 		DataOutputStream dos = null;
 		String lineEnd = "\r\n";
@@ -144,18 +145,29 @@ public class PostEventImage {
 		byte[] buffer;
 		int maxBufferSize = 10 * 1024 * 1024;
 		final File sourceFile = new File(path);
+		FileOutputStream fos = null;
+		ByteArrayOutputStream bos = null;
 		String serverResponseMessage = null;
 		String responce = null;
-		if (!sourceFile.isFile()) {
 
-
-			Log.e("notAFile", "not a file");
-
-			return "no file";
-		} else {
 			try {
+
+				sourceFile.createNewFile();
+
+				// Convert bitmap to byte array
+				bos = new ByteArrayOutputStream();
+				image.compress(CompressFormat.JPEG, 80, bos);
+				byte[] bitmapMetadata = bos.toByteArray();
+
+				// write the bytes in file
+				fos = new FileOutputStream(sourceFile);
+				fos.write(bitmapMetadata);
+				fos.flush();
+
+
 				FileInputStream fileInputStream = new FileInputStream(sourceFile.getPath());
-				URL url = new URL("your upload server/API url");
+				String urlImage = MessageFormat.format(url, eventId);
+				URL url = new URL(urlImage);
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setDoInput(true); // Allow Inputs
 				conn.setDoOutput(true); // Allow Outputs
@@ -198,13 +210,15 @@ public class PostEventImage {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 			} catch (MalformedURLException ex) {
-				Log.e("uploadException", "Upload file to server Exception", e);
+				Log.e("uploadException", "Upload file to server Exception", ex);
 				//TODO - exception handling
 			} catch (IOException e) {
 
 				Log.e("uploadException", "Upload file to server Exception", e);
+			} finally {
+				cleanResources(fos, sourceFile, bos);
 			}
-		}
+
 		return responce;
 	}
 }

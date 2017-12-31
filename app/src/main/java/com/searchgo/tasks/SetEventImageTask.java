@@ -30,7 +30,8 @@ public class SetEventImageTask extends AsyncTask<Object, Void, JsonElement> {
             String token = (String) params[0];
             String path = (String) params[1];
             PostEventImage service = new PostEventImage(bitmap, token, eventId, path);
-            return service.sendImage();
+            service.uploadFile();
+            return null;
         } catch (Exception e) {
             Log.e("failedSavePicture", "fail to save picture", e);
             return null;
