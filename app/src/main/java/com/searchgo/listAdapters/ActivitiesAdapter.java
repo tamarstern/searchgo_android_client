@@ -41,12 +41,6 @@ public class ActivitiesAdapter extends ArrayAdapter<EmergencyEventServiceDto> {
         final EmergencyEventServiceDto activityDto = details.get(position);
         layout = rowView.findViewById(R.id.single_activity_layout);
 
-        layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActivityUtils.startEventPageActivity(context, activityDto);
-            }
-        });
         activityName = rowView.findViewById(R.id.activity_name);
         activityName.setText(activityDto.getName());
 
