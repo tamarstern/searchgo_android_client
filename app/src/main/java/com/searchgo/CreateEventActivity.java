@@ -5,10 +5,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.searchgo.application.SearchGoApplication;
 import com.searchgo.backgroundServices.BackgroundServiceScheduler;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
@@ -26,10 +25,9 @@ import com.searchgo.fragments.DateSelectorFragment;
 import com.searchgo.utils.ActivityUtils;
 import com.searchgo.utils.ImageSelectorUtils;
 import com.searchgo.utils.LoginUtils;
-import com.strongloop.android.loopback.Model;
+import com.strongloop.android.loopback.callbacks.VoidCallback;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import static com.searchgo.constants.ApplicationConstants.EVENT_DTO;
@@ -53,8 +51,7 @@ public class CreateEventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_event);
 
         Intent intent = getIntent();
-        event = (EmergencyEventServiceDto)intent.getExtras().get(EVENT_DTO)
-        ;
+        event = (EmergencyEventServiceDto)intent.getExtras().get(EVENT_DTO);
 
         radioCategoryGroup = findViewById(R.id.radio_category_group);
 
@@ -69,9 +66,10 @@ public class CreateEventActivity extends AppCompatActivity {
                 initLastSeenOnSave();
                 EmergencyEventServiceDto emergencyEventServiceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventServiceDto(application, event);
                 sendSaveEventRequest(emergencyEventServiceDto);
+                startEventPage(activity);
             }
         });
-        startEventPage(activity);
+
         eventNameEditText = findViewById(R.id.enter_event_name);
 
         addImageButton = findViewById(R.id.add_picture_btn);
@@ -97,7 +95,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
     private void sendSaveEventRequest(final EmergencyEventServiceDto serviceDto) {
         final Activity activity = this;
-        serviceDto.save(new Model.Callback() {
+        serviceDto.save(new VoidCallback() {
 
             @Override
             public void onSuccess() {
@@ -145,17 +143,17 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == HomePageActivity.SEARCH_FOR_LOCATION_FOR_EVENT_CREATION) {
-            double geoLat = data.getDoubleExtra(SearchEventActivity.LAT, 0);
-            double geoLong = data.getDoubleExtra(SearchEventActivity.LONG, 0);
-            HashMap<String, Double> geoMap = new HashMap<>();
-            geoMap.put("lat", geoLat);
-            geoMap.put("lng", geoLong);
-            event.setStartingPoint(geoMap);
-        } else {
-            eventPicture = ImageSelectorUtils.initializeImage(requestCode, resultCode, data, this.eventImage, this.addImageButton,
-                    this);
-        }
+//        if (requestCode == HomePageActivity.SEARCH_FOR_LOCATION_FOR_EVENT_CREATION) {
+//            double geoLat = data.getDoubleExtra(SearchEventActivity.LAT, 0);
+//            double geoLong = data.getDoubleExtra(SearchEventActivity.LONG, 0);
+//            HashMap<String, Double> geoMap = new HashMap<>();
+//            geoMap.put("lat", geoLat);
+//            geoMap.put("lng", geoLong);
+//            event.setStartingPoint(geoMap);
+//        } else {
+        eventPicture = ImageSelectorUtils.initializeImage(requestCode, resultCode, data, this.eventImage, this.addImageButton,
+                this);
+//        }
     }
 
 

@@ -43,7 +43,6 @@
             android:name=".backgroundServices.GetMyEventsBackgroundService"
             android:exported="false" />
 
-
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -78,18 +77,19 @@
         <activity
             android:name=".SearchEventActivity"
             android:label="@string/title_activity_map" />
-        <activity android:name=".CreateEventActivity"></activity>
+        <activity android:name=".CreateEventActivity" />
         <activity
             android:name=".HomePageActivity"
             android:label="@string/title_activity_home_page"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".CreateEventOrch"></activity>
     </application>
 
 </manifest>

@@ -30,6 +30,11 @@ public class ActivityUtils {
         return activity.getApplicationContext().getSharedPreferences(ApplicationConstants.USER_DETAILS_PREFERENCES, Context.MODE_PRIVATE);
     }
 
+    public static void startEventPageActivity(Context activity , EmergencyEventServiceDto dto){
+        Intent intent = new Intent(activity, SearchEventActivity.class);
+        intent.putExtra(EVENT_DTO, dto);
+        activity.startActivity(intent);
+    }
     public static void saveEventPicture(String eventId, Bitmap eventImage, Activity context, String token) {
         if (eventImage != null) {
             Object[] eventImageParams = new Object[]{ token,

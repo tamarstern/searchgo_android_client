@@ -1,11 +1,11 @@
 package com.searchgo;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.Manifest;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -20,14 +20,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -42,17 +37,16 @@ import com.searchgo.dto.service.EmergencyEventServiceDtoFactory;
 import com.searchgo.fragments.PageAdapter;
 import com.strongloop.android.loopback.callbacks.ListCallback;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.searchgo.constants.ApplicationConstants.EVENT_DTO;
 
 public class HomePageActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback {
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
-    private static int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+
     public final static int SEARCH_FOR_LOCATION_FOR_EVENT_CREATION = 8000;
     final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
     private static final int DEFAULT_ZOOM = 15;
@@ -73,10 +67,9 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                callPlaceAutocompleteActivityIntent();
+                callCreateEventOrch();
             }
         });
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -86,16 +79,17 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
     }
 
 
-    private void callPlaceAutocompleteActivityIntent() {
-        try {
-            Intent intent =
-                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-                            .build(this);
-            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-            // TODO: Handle the error.
-        }
-
+    private void callCreateEventOrch() {
+//        try {
+//            Intent intent =
+//                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+//                            .build(this);
+//            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+//        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+//            // TODO: Handle the error.
+//        }
+        Intent intent = new Intent(this, CreateEventOrch.class);
+        startActivity(intent);
     }
 
     @Override
@@ -159,19 +153,31 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
 
     private void showNearByEvents(List<EmergencyEventServiceDto> events) {
         if (events != null) {
-            for (EmergencyEventServiceDto ev : events) {
-                HashMap<String, Double> startingPoint = ev.getStartingPoint();
-                if (startingPoint != null) {
-                    Double lat = startingPoint.containsKey("lat") ? startingPoint.get("lat") : 0.0;
-                    Double lng = startingPoint.containsKey("lng") ? startingPoint.get("lng") : 0.0;
-                    LatLng loc = new LatLng(lat, lng);
-                    mMap.addMarker(new MarkerOptions()
-                            .title(ev.getName())
-                            .position(loc)
-                            .snippet(ev.getDescription()));
-                }
+            List<MarkerOptions> markers = clusteredMarkers(events);
+            for (MarkerOptions m : markers) {
+                    mMap.addMarker(m);
             }
         }
+    }
+
+    private List<MarkerOptions> clusteredMarkers(List<EmergencyEventServiceDto> events) {
+        List<MarkerOptions> result = new ArrayList<>();
+        for (EmergencyEventServiceDto ev : events) {
+            HashMap<String, Double> startingPoint = ev.getStartingPoint();
+            if (startingPoint != null) {
+                /* TODO: add clustering logic
+                 (hash latlng and create markers around a radius of common latlngs)*/
+                Double lat = startingPoint.containsKey("lat") ? startingPoint.get("lat") : 0.0;
+                Double lng = startingPoint.containsKey("lng") ? startingPoint.get("lng") : 0.0;
+                LatLng loc = new LatLng(lat, lng);
+                MarkerOptions markerOptions = new MarkerOptions()
+                        .title(ev.getName())
+                        .position(loc)
+                        .snippet(ev.getDescription());
+                result.add(markerOptions);
+            }
+        }
+        return result;
     }
 
     private void getNearByEvents(LatLng latLng, int radius) {
@@ -213,27 +219,27 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                String address = place.getAddress().toString();
-                Intent intent = new Intent(this, CreateEventActivity.class);
-                SearchGoApplication app = (SearchGoApplication)this.getApplication();
-                EmergencyEventServiceDto emergencyEventServiceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventServiceDto(app);
-                emergencyEventServiceDto.setAddress(address);
-                intent.putExtra(EVENT_DTO, emergencyEventServiceDto);
-                startActivity(intent);
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                Log.i("FailedToGetPlace", status.getStatusMessage());
-            } else if (requestCode == RESULT_CANCELED) {
-
-            }
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+//            if (resultCode == RESULT_OK) {
+//                Place place = PlaceAutocomplete.getPlace(this, data);
+//                String address = place.getAddress().toString();
+//                Intent intent = new Intent(this, CreateEventActivity.class);
+//                SearchGoApplication app = (SearchGoApplication)this.getApplication();
+//                EmergencyEventServiceDto emergencyEventServiceDto = EmergencyEventServiceDtoFactory.generateEmergencyEventServiceDto(app);
+//                emergencyEventServiceDto.setAddress(address);
+//                intent.putExtra(EVENT_DTO, emergencyEventServiceDto);
+//                startActivity(intent);
+//            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+//                Status status = PlaceAutocomplete.getStatus(this, data);
+//                Log.i("FailedToGetPlace", status.getStatusMessage());
+//            } else if (requestCode == RESULT_CANCELED) {
+//
+//            }
+//        }
+//    }
 
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -294,7 +300,6 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
-
         getCurrentLocation();
 
     }

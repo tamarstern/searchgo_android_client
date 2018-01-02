@@ -69,6 +69,7 @@ public class SearchEventActivity extends FragmentActivity implements OnMapReadyC
             mMap.addMarker(new MarkerOptions().position(addressToDisplay).title("Marker in Sydney"));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(addressToDisplay));
             mMap.setMinZoomPreference(15);
+
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
                 @Override
@@ -79,17 +80,17 @@ public class SearchEventActivity extends FragmentActivity implements OnMapReadyC
 
                     mMap.addMarker(marker);
 
-                    Log.i("MarkerAdded" , point.latitude+"---"+ point.longitude);
+                    Log.i("MarkerAdded", point.latitude + "---" + point.longitude);
                 }
             });
             ComponentName callingActivity = getCallingActivity();
-            if (callingActivity != null) {
-                Intent result = new Intent();
-                result.putExtra(LAT, addressToDisplay.latitude);
-                result.putExtra(LONG, addressToDisplay.longitude);
-                setResult(1, result);
-                finish();
-            }
+//            if (callingActivity != null) {
+//                Intent result = new Intent();
+//                result.putExtra(LAT, addressToDisplay.latitude);
+//                result.putExtra(LONG, addressToDisplay.longitude);
+//                setResult(1, result);
+//                finish();
+//            }
         }
     }
 
