@@ -15,12 +15,10 @@ public class EmergencyEventServiceDtoFactory {
 
 
     public static EmergencyEventServiceDto generateEmergencyEventServiceDto(SearchGoApplication application, EmergencyEventServiceDto dto) {
-        EmergencyEventRepository repository = getEmergencyEventRepository(application);
-        EmergencyEventServiceDto serviceEvent = repository.createObject(new HashMap<String, Object>());
+        EmergencyEventServiceDto serviceEvent = new EmergencyEventServiceDto();
         serviceEvent.setId(dto.getId());
         serviceEvent.setAddress(dto.getAddress());
         serviceEvent.setName(dto.getName());
-        //serviceEvent.setDescription(dto.getDescription());
         serviceEvent.setLastSeen(dto.getLastSeen());
         serviceEvent.setCreatedOn(dto.getCreatedOn());
         serviceEvent.setCategory(dto.getCategory());
@@ -29,8 +27,8 @@ public class EmergencyEventServiceDtoFactory {
     }
 
     public static EmergencyEventServiceDto generateEmergencyEventServiceDto(SearchGoApplication application) {
-        EmergencyEventRepository repository = getEmergencyEventRepository(application);
-        EmergencyEventServiceDto dto = repository.createObject(new HashMap<String, Object>());
+
+        EmergencyEventServiceDto dto = new EmergencyEventServiceDto();
         String id = UUID.randomUUID().toString();
         dto.setId(id);
         dto.setCreatedOn(new Date());
@@ -38,7 +36,8 @@ public class EmergencyEventServiceDtoFactory {
     }
 
     public static EmergencyEventRepository getEmergencyEventRepository(SearchGoApplication application) {
-        RestAdapter adapter = application.getLoopBackAdapter();
-        return adapter.createRepository(EmergencyEventRepository.class);
+        //RestAdapter adapter = application.getLoopBackAdapter();
+        return null;
+       // return adapter.createRepository(EmergencyEventRepository.class);
     }
 }

@@ -1,8 +1,8 @@
 package com.searchgo.fragments;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +58,7 @@ public class MyEventsFragment extends Fragment {
         }
         EmergencyEventRepository emergencyEventRepository = EmergencyEventServiceDtoFactory.getEmergencyEventRepository(app);
 
-        emergencyEventRepository.findEventsUserCreated(new ListCallback<EmergencyEventServiceDto>() {
+        /*emergencyEventRepository.findEventsUserCreated(new ListCallback<EmergencyEventServiceDto>() {
             @Override
             public void onSuccess(List<EmergencyEventServiceDto> dtos) {
                 initEventsFromServer(dtos);
@@ -69,7 +69,7 @@ public class MyEventsFragment extends Fragment {
             public void onError(Throwable t) {
 
             }
-        });
+        });*/
     }
 
     private void initEventsFromServer(Collection<EmergencyEventServiceDto> myEvents) {

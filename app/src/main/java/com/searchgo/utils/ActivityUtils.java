@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.searchgo.SearchEventActivity;
 import com.searchgo.constants.ApplicationConstants;
@@ -35,6 +36,12 @@ public class ActivityUtils {
         intent.putExtra(EVENT_DTO, dto);
         activity.startActivity(intent);
     }
+
+    public static void HandleConnectionUnsuccessfullToServer(Exception excption) {
+
+        Log.e(Context.CONNECTIVITY_SERVICE, "Unable connect to server", excption);
+    }
+
     public static void saveEventPicture(String eventId, Bitmap eventImage, Activity context, String token) {
         if (eventImage != null) {
             Object[] eventImageParams = new Object[]{ token,

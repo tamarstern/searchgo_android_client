@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity implements ITokenRetrieveEn
         setContentView(R.layout.activity_login);
 
         if(isLoggedIn()) {
+            new TokenRetrievalTask(LoginActivity.this, LoginActivity.this).execute(AccessToken.getCurrentAccessToken().getToken());
             startMainFlow();
         } else {
             doFacebookLogin();

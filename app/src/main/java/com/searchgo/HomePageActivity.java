@@ -42,8 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HomePageActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback {
+public class HomePageActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
@@ -71,8 +70,8 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
             }
         });
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
+              //  .addConnectionCallbacks(this)
+               // .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -182,7 +181,7 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
 
     private void getNearByEvents(LatLng latLng, int radius) {
         EmergencyEventRepository emergencyEventRepository = EmergencyEventServiceDtoFactory.getEmergencyEventRepository((SearchGoApplication) this.getApplication());
-        emergencyEventRepository.getNearByEvents(latLng, radius, new ListCallback<EmergencyEventServiceDto>() {
+       /* emergencyEventRepository.getNearByEvents(latLng, radius, new ListCallback<EmergencyEventServiceDto>() {
             @Override
             public void onSuccess(List<EmergencyEventServiceDto> objects) {
                 showNearByEvents(objects);
@@ -192,7 +191,7 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
             public void onError(Throwable t) {
                 Log.e("failGetMyEvents", "failed to get nearby events", t);
             }
-        });
+        });*/
     }
 
     @Override
@@ -273,9 +272,9 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
         });
     }
 
-    @Override
+    /*@Override
     public void onConnected(@Nullable Bundle bundle) {
-        getCurrentLocation();
+      int i = 0;
     }
 
     @Override
@@ -295,7 +294,7 @@ public class HomePageActivity extends AppCompatActivity implements GoogleApiClie
         } else {
             Log.i("GetLocationFailed", "Location services connection failed with code " + connectionResult.getErrorCode());
         }
-    }
+    }*/
 
     @Override
     public void onMapReady(GoogleMap map) {

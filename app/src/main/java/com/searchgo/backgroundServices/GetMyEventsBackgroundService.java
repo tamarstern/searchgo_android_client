@@ -32,7 +32,7 @@ public class GetMyEventsBackgroundService extends IntentService {
         final SearchGoApplication app = (SearchGoApplication)getApplication();
         EmergencyEventRepository emergencyEventRepository = EmergencyEventServiceDtoFactory.getEmergencyEventRepository(app);
 
-        emergencyEventRepository.findEventsUserCreated(new ListCallback<EmergencyEventServiceDto>() {
+        /*emergencyEventRepository.findEventsUserCreated(new ListCallback<EmergencyEventServiceDto>() {
             @Override
             public void onSuccess(List<EmergencyEventServiceDto> dtos) {
                 app.resetMyEvents(dtos);
@@ -42,7 +42,7 @@ public class GetMyEventsBackgroundService extends IntentService {
             public void onError(Throwable t) {
                 Log.e("failGetMyEvents", "failed to get my events", t);
             }
-        });
+        });*/
 
     }
 }

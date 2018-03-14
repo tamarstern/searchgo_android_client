@@ -33,8 +33,8 @@ import static com.searchgo.constants.ServiceConstants.LIST_ITEMS_ELEM;
  * Created by tamar.twena on 12/4/2017.
  */
 
-public class EmergencyEventRepository extends ModelRepository<EmergencyEventServiceDto> {
-    public EmergencyEventRepository() {
+public class EmergencyEventRepository /*extends ModelRepository<EmergencyEventServiceDto>*/ {
+    /*public EmergencyEventRepository() {
         super("EmergencyEvents", "EmergencyEvents", EmergencyEventServiceDto.class);
     }
 
@@ -45,13 +45,13 @@ public class EmergencyEventRepository extends ModelRepository<EmergencyEventServ
                 getClassName() + ".greet");
 
         return contract;
-    }
+    }*/
 
-    public void findEventsUserCreated(final ListCallback<EmergencyEventServiceDto> callback) {
+    /*public void findEventsUserCreated(final ListCallback<EmergencyEventServiceDto> callback) {
         findWithFilter("{\"where\" : {\"name\" : { \"like\" : \"name\"}} }",callback);
-    }
+    }*/
 
-    public void getNearByEvents(LatLng from, int radius, final ListCallback<EmergencyEventServiceDto> callback) {
+    /*public void getNearByEvents(LatLng from, int radius, final ListCallback<EmergencyEventServiceDto> callback) {
         findWithFilter("{\"where\" : {" +
                 "\"startingPoint\" : {" +
                 "\"near\" : {" +
@@ -63,9 +63,9 @@ public class EmergencyEventRepository extends ModelRepository<EmergencyEventServ
                 "}" +
                 "}" +
                 "}", callback);
-    }
+    }*/
 
-    public void findWithFilter(String filter, final ListCallback<EmergencyEventServiceDto> callback) {
+   /* public void findWithFilter(String filter, final ListCallback<EmergencyEventServiceDto> callback) {
         invokeStaticMethod("greet", ImmutableMap.of("filter", filter), new Adapter.Callback() {
 
             @Override
@@ -96,7 +96,7 @@ public class EmergencyEventRepository extends ModelRepository<EmergencyEventServ
                 return resultJsonArray.iterator();
             }
         });
-    }
+    }*/
 
     @NonNull
     private EmergencyEventServiceDto createServiceDto(JsonObject nextElem) {

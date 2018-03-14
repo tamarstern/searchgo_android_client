@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -17,11 +18,14 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.searchgo.application.SearchGoApplication;
 import com.searchgo.backgroundServices.BackgroundServiceScheduler;
 import com.searchgo.dto.service.EmergencyEventServiceDto;
 import com.searchgo.dto.service.EmergencyEventServiceDtoFactory;
 import com.searchgo.fragments.DateSelectorFragment;
+import com.searchgo.nativeServices.SaveNewEventService;
 import com.searchgo.utils.ActivityUtils;
 import com.searchgo.utils.ImageSelectorUtils;
 import com.searchgo.utils.LoginUtils;
@@ -94,25 +98,15 @@ public class CreateEventActivity extends AppCompatActivity {
 
 
     private void sendSaveEventRequest(final EmergencyEventServiceDto serviceDto) {
-        final Activity activity = this;
-        serviceDto.save(new VoidCallback() {
+       new SaveNewEventTask(serviceDto).execute();
+    }
 
-            @Override
-            public void onSuccess() {
-                ActivityUtils.saveEventPicture(serviceDto.getId(), eventPicture, activity, LoginUtils.getAccessToken(activity));
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                Log.e("ErrorOnSave", "Cannot save Emergency Event model.", t);
-                HashSet<EmergencyEventServiceDto> searchEventsToSave = ((SearchGoApplication) activity.getApplication()).getSearchEventsToSave();
-                searchEventsToSave.add(serviceDto);
-                if(!BackgroundServiceScheduler.isSaveEventServiceRunning()) {
-                    BackgroundServiceScheduler.scheduleSaveEmergencyEventService(activity);
-                }
-            }
-        });
-
+    private void saveEventOnBackground(Activity activity, EmergencyEventServiceDto serviceDto) {
+        HashSet<EmergencyEventServiceDto> searchEventsToSave = ((SearchGoApplication) activity.getApplication()).getSearchEventsToSave();
+        searchEventsToSave.add(serviceDto);
+        if(!BackgroundServiceScheduler.isSaveEventServiceRunning()) {
+            BackgroundServiceScheduler.scheduleSaveEmergencyEventService(activity);
+        }
     }
 
 
@@ -143,17 +137,8 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-//        if (requestCode == HomePageActivity.SEARCH_FOR_LOCATION_FOR_EVENT_CREATION) {
-//            double geoLat = data.getDoubleExtra(SearchEventActivity.LAT, 0);
-//            double geoLong = data.getDoubleExtra(SearchEventActivity.LONG, 0);
-//            HashMap<String, Double> geoMap = new HashMap<>();
-//            geoMap.put("lat", geoLat);
-//            geoMap.put("lng", geoLong);
-//            event.setStartingPoint(geoMap);
-//        } else {
         eventPicture = ImageSelectorUtils.initializeImage(requestCode, resultCode, data, this.eventImage, this.addImageButton,
                 this);
-//        }
     }
 
 
@@ -176,5 +161,42 @@ public class CreateEventActivity extends AppCompatActivity {
         String categoryText = radioCategoryButton.getText().toString();
         event.setCategory(categoryText);
     }
+
+    private class SaveNewEventTask extends AsyncTask<Object, Void, JsonElement> {
+
+        private EmergencyEventServiceDto dto;
+
+
+        public SaveNewEventTask(EmergencyEventServiceDto dto) {
+            this.dto = dto;
+        }
+
+        @Override
+        protected JsonElement doInBackground(Object... params) {
+
+            try {
+                SaveNewEventService service = new SaveNewEventService(dto,CreateEventActivity.this);
+                return service.service();
+            } catch (Exception e) {
+                ActivityUtils.HandleConnectionUnsuccessfullToServer(e);
+                saveEventOnBackground(CreateEventActivity.this, dto);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(JsonElement result) {
+            if (result == null) {
+                return;
+            }
+            JsonObject resultJsonObject = result.getAsJsonObject();
+            ActivityUtils.saveEventPicture(dto.getId(), eventPicture, CreateEventActivity.this, LoginUtils.getAccessToken(CreateEventActivity.this));
+
+        }
+
+
+
+    }
+
 
 }

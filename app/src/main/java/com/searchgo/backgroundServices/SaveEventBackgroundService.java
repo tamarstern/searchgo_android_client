@@ -33,7 +33,8 @@ public class SaveEventBackgroundService extends IntentService {
             HashSet<EmergencyEventServiceDto> containerToItertateOn = new HashSet<>();
             containerToItertateOn.addAll(searchEventsToSaveContainer);
             for (final EmergencyEventServiceDto searchEventsToSave : containerToItertateOn) {
-                searchEventsToSave.save(new Model.Callback() {
+
+                /*searchEventsToSave.save(new Model.Callback() {
 
                     @Override
                     public void onSuccess() {
@@ -44,7 +45,7 @@ public class SaveEventBackgroundService extends IntentService {
                     public void onError(Throwable t) {
                         Log.e("ErrorOnSave", "Cannot save Emergency Event model.", t);
                     }
-                });
+                });*/
             }
         } catch (Exception e) {
             Log.e("failedSaveEventService", "failed to save events", e);

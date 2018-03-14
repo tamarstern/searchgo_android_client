@@ -1,8 +1,6 @@
 package com.searchgo.dto.service;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.strongloop.android.loopback.Model;
-import com.strongloop.android.loopback.ModelRepository;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,7 +10,7 @@ import java.util.HashMap;
  * Created by tamar.twena on 11/21/2017.
  */
 
-public class EmergencyEventServiceDto extends Model implements Serializable {
+public class EmergencyEventServiceDto implements Serializable {
 
     private String id;
 
